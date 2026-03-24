@@ -1,0 +1,161 @@
+MTG BASE RULES (STANDARD, 1v1)
+Purpose: Base rules reference for building an MTG simulator.
+Source: https://thegamerslodge.com/blogs/magic-the-gathering/a-beginners-guide-to-magic-the-gathering?srsltid=AfmBOoqRJMhEfOGvbloTarUH1t8GOeF7oIVYc2xWj4jKCN6fEs_FSR4U
+
+------------------------------------------------------------
+1) GAME OVERVIEW
+------------------------------------------------------------
+- Magic: The Gathering is a turn-based card game.
+- In this simulator scope, match type is Standard, one-versus-one.
+- Each player uses their own deck and attempts to win by game rules.
+
+------------------------------------------------------------
+2) STANDARD (SIMPLIFIED BASE FORMAT)
+------------------------------------------------------------
+- Deck size: minimum 60 cards.
+- Sideboard: up to 15 cards (used between games in a match).
+- Card pool: recent rotating sets (commonly around the last ~2 years).
+- Copy limit: up to 4 copies of a card by English name, except basic lands.
+- Starting life total: 20 life per player.
+
+Note: Official legality, bans, and exact set rotation are maintained by Wizards.
+
+------------------------------------------------------------
+3) WIN CONDITIONS (CORE FOR SIMULATOR)
+------------------------------------------------------------
+A player loses if any of these happen:
+- Life total is 0 or less.
+- They attempt to draw from an empty library.
+- They receive 10 or more poison counters.
+- A card-specific alternate win/loss condition resolves.
+
+If one player loses, the other player wins.
+
+------------------------------------------------------------
+4) GAME SETUP
+------------------------------------------------------------
+1. Each player presents a legal Standard deck.
+2. Determine who plays first (random method).
+3. Shuffle decks.
+4. Each player draws 7 cards.
+5. Mulligan process (London Mulligan):
+   - A player may shuffle and redraw 7 cards repeatedly.
+   - After keeping a hand, that player puts a number of cards from hand
+     on the bottom of their library equal to mulligans taken.
+6. Begin first turn.
+
+------------------------------------------------------------
+5) TURN STRUCTURE (PER TURN)
+------------------------------------------------------------
+Each turn follows this order:
+
+1. Untap Step
+   - Active player untaps tapped permanents they control.
+
+2. Upkeep Step
+   - "At upkeep" triggers and effects happen.
+
+3. Draw Step
+   - Active player draws 1 card.
+   - (Player who goes first usually skips first-turn draw in official rules.)
+
+4. Main Phase (Precombat)
+   - Active player may play one land (if not already played this turn).
+   - Active player may cast spells they can pay for.
+   - Sorcery-speed restrictions apply.
+
+5. Combat Phase
+   a) Beginning of Combat
+   b) Declare Attackers
+   c) Declare Blockers
+   d) Combat Damage
+   e) End of Combat
+
+6. Main Phase (Postcombat)
+   - Active player may cast more spells.
+   - No second land play unless an effect allows it.
+
+7. End Step / Cleanup
+   - End-step triggers resolve.
+   - If active player has more than 7 cards in hand during cleanup,
+     discard down to 7.
+   - Damage marked on creatures is removed in cleanup.
+
+------------------------------------------------------------
+6) CARD TYPES (BASE SIMULATOR SUPPORT)
+------------------------------------------------------------
+- Land: primary mana source.
+- Creature: can attack/block; has power/toughness and abilities.
+- Instant: can generally be cast at any time player has priority.
+- Sorcery: cast only during controller main phase when stack is empty.
+- Artifact: nonland permanent with ongoing/static/activated effects.
+- Enchantment: nonland permanent with ongoing/static/triggered effects.
+- Planeswalker: permanent with loyalty abilities (typically once each turn).
+
+------------------------------------------------------------
+7) MANA AND CASTING (BASE LOGIC)
+------------------------------------------------------------
+- Mana is usually produced by lands and some other cards.
+- To cast a spell:
+  1) Move spell to stack.
+  2) Choose modes/targets and pay all costs.
+  3) Players may respond while spell is on stack.
+  4) If not countered and all legal checks pass, spell resolves.
+- Colored mana requirements must be satisfied exactly.
+- Generic mana can be paid with any mana type.
+
+------------------------------------------------------------
+8) COMBAT (SIMPLIFIED RESOLUTION)
+------------------------------------------------------------
+- Creatures attack opposing player (or planeswalker if present).
+- Defending player assigns blockers from untapped eligible creatures.
+- Blocked/unblocked state determines damage assignment.
+- Combat damage is dealt simultaneously unless abilities modify timing
+  (example: first strike, double strike).
+- Unblocked combat damage to player reduces life total.
+
+------------------------------------------------------------
+9) COMMON KEYWORDS (MINIMUM SET TO MODEL EARLY)
+------------------------------------------------------------
+- Flying: can only be blocked by flying/reach creatures.
+- Reach: can block creatures with flying.
+- Trample: excess combat damage can hit defending player/planeswalker.
+- Haste: creature can attack/use tap abilities the turn it enters.
+- Vigilance: attacking does not tap this creature.
+- Lifelink: damage dealt causes controller to gain that much life.
+- Deathtouch: any non-zero damage from source is lethal to creature.
+- First Strike: deals combat damage in first strike step.
+- Double Strike: deals damage in first strike and regular steps.
+
+------------------------------------------------------------
+10) STATE TRACKING FOR SIMULATOR
+------------------------------------------------------------
+Track at minimum per player:
+- Life total
+- Library size/order
+- Hand
+- Battlefield permanents
+- Graveyard
+- Exile
+- Poison counters
+- Land plays used this turn
+
+Track at game level:
+- Active player / turn number
+- Current phase/step
+- Stack
+- Priority holder
+- Trigger queue
+- Win/loss flags
+
+------------------------------------------------------------
+11) OUT OF SCOPE (FOR LATER ITERATIONS)
+------------------------------------------------------------
+- Full Comprehensive Rules edge cases
+- Layer system details
+- Replacement/prevention corner cases
+- Tournament policy and timed-round procedures
+- Full card database legality engine
+
+This file is intended as a practical base-rules document for simulator
+development, not as a full official rules replacement.

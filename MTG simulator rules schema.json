@@ -1,0 +1,284 @@
+{
+  "schema_version": "1.0.0",
+  "source_document": "MTG base rules.txt",
+  "game": {
+    "name": "Magic: The Gathering",
+    "mode": "standard_1v1",
+    "description": "Simulator-oriented base schema for Standard one-versus-one games."
+  },
+  "format": {
+    "players": 2,
+    "starting_life": 20,
+    "deck": {
+      "min_mainboard_size": 60,
+      "max_sideboard_size": 15,
+      "max_copies_per_card": 4,
+      "copy_limit_exceptions": [
+        "basic_land"
+      ],
+      "rotation_model": "recent_sets_rotating"
+    }
+  },
+  "zones": [
+    "library",
+    "hand",
+    "battlefield",
+    "graveyard",
+    "exile",
+    "stack",
+    "sideboard",
+    "command"
+  ],
+  "card_types": [
+    "land",
+    "creature",
+    "instant",
+    "sorcery",
+    "artifact",
+    "enchantment",
+    "planeswalker"
+  ],
+  "keywords_supported": [
+    "flying",
+    "reach",
+    "trample",
+    "haste",
+    "vigilance",
+    "lifelink",
+    "deathtouch",
+    "first_strike",
+    "double_strike"
+  ],
+  "game_setup": {
+    "steps": [
+      "validate_decks",
+      "determine_starting_player",
+      "shuffle_libraries",
+      "draw_opening_hands",
+      "perform_mulligans",
+      "begin_first_turn"
+    ],
+    "opening_hand_size": 7,
+    "mulligan": {
+      "type": "london",
+      "redraw_size": 7,
+      "bottom_cards_equal_to_mulligans": true
+    },
+    "first_player_draw_rule": {
+      "applies": true,
+      "rule": "skip_first_turn_draw"
+    }
+  },
+  "turn_structure": {
+    "phases": [
+      {
+        "name": "untap",
+        "steps": [
+          "untap_step"
+        ]
+      },
+      {
+        "name": "upkeep",
+        "steps": [
+          "upkeep_step"
+        ]
+      },
+      {
+        "name": "draw",
+        "steps": [
+          "draw_step"
+        ]
+      },
+      {
+        "name": "precombat_main",
+        "steps": [
+          "main_step"
+        ],
+        "rules": {
+          "max_land_plays_default": 1
+        }
+      },
+      {
+        "name": "combat",
+        "steps": [
+          "beginning_of_combat",
+          "declare_attackers",
+          "declare_blockers",
+          "combat_damage",
+          "end_of_combat"
+        ]
+      },
+      {
+        "name": "postcombat_main",
+        "steps": [
+          "main_step"
+        ]
+      },
+      {
+        "name": "end",
+        "steps": [
+          "end_step",
+          "cleanup_step"
+        ],
+        "cleanup": {
+          "default_max_hand_size": 7,
+          "remove_marked_damage": true
+        }
+      }
+    ]
+  },
+  "priority_and_stack": {
+    "uses_priority_system": true,
+    "stack_zone_name": "stack",
+    "resolution_order": "last_in_first_out",
+    "cast_flow": [
+      "announce_spell",
+      "choose_modes_targets",
+      "pay_costs",
+      "pass_priority_cycle",
+      "resolve_or_counter"
+    ]
+  },
+  "combat": {
+    "attacker_targets": [
+      "opponent",
+      "planeswalker"
+    ],
+    "blocking_model": "declare_eligible_blockers",
+    "default_damage_timing": "simultaneous",
+    "modified_damage_timing_keywords": [
+      "first_strike",
+      "double_strike"
+    ]
+  },
+  "costs_and_mana": {
+    "mana_payment": {
+      "colored_mana_must_match_symbols": true,
+      "generic_mana_accepts_any_color": true
+    },
+    "land_play": {
+      "is_not_cast": true,
+      "default_limit_per_turn": 1
+    }
+  },
+  "state_tracking": {
+    "per_player": [
+      "life_total",
+      "poison_counters",
+      "land_plays_used_this_turn",
+      "library",
+      "hand",
+      "battlefield",
+      "graveyard",
+      "exile"
+    ],
+    "global": [
+      "active_player_id",
+      "turn_number",
+      "current_phase",
+      "current_step",
+      "priority_player_id",
+      "stack",
+      "trigger_queue",
+      "winner_player_id",
+      "game_over"
+    ]
+  },
+  "win_conditions": {
+    "loss_checks": [
+      {
+        "id": "life_zero_or_less",
+        "description": "A player loses when life is 0 or less."
+      },
+      {
+        "id": "draw_from_empty_library",
+        "description": "A player loses when they must draw from an empty library."
+      },
+      {
+        "id": "ten_or_more_poison",
+        "description": "A player loses when they have 10 or more poison counters."
+      },
+      {
+        "id": "card_defined_alternate_loss",
+        "description": "A player loses if a card effect says they lose the game."
+      },
+      {
+        "id": "card_defined_alternate_win",
+        "description": "A player wins if a card effect says they win the game."
+      }
+    ],
+    "evaluation_timing": [
+      "after_state_based_actions",
+      "after_spell_or_ability_resolution",
+      "during_cleanup_if_needed"
+    ]
+  },
+  "action_schema": {
+    "action_types": [
+      {
+        "id": "play_land",
+        "required_fields": [
+          "player_id",
+          "card_id"
+        ],
+        "constraints": [
+          "main_phase_only",
+          "stack_empty",
+          "land_play_remaining"
+        ]
+      },
+      {
+        "id": "cast_spell",
+        "required_fields": [
+          "player_id",
+          "card_id",
+          "payment_plan"
+        ],
+        "optional_fields": [
+          "targets",
+          "mode_choices",
+          "additional_cost_choices"
+        ]
+      },
+      {
+        "id": "activate_ability",
+        "required_fields": [
+          "player_id",
+          "source_id",
+          "ability_id"
+        ],
+        "optional_fields": [
+          "targets",
+          "payment_plan"
+        ]
+      },
+      {
+        "id": "declare_attackers",
+        "required_fields": [
+          "player_id",
+          "attacks"
+        ]
+      },
+      {
+        "id": "declare_blockers",
+        "required_fields": [
+          "player_id",
+          "blocks"
+        ]
+      },
+      {
+        "id": "pass_priority",
+        "required_fields": [
+          "player_id"
+        ]
+      }
+    ]
+  },
+  "out_of_scope": [
+    "full_comprehensive_rules_coverage",
+    "advanced_layer_system",
+    "replacement_and_prevention_edge_cases",
+    "tournament_policy_round_timing",
+    "official_card_legality_service"
+  ]
+}
