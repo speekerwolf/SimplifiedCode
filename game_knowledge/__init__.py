@@ -1,5 +1,41 @@
-"""Module one: minimal game rules knowledge."""
+"""Module one: game rules knowledge for the simulator."""
 
-from .rules import GAME_DESCRIPTION, MAX_TURNS, PLAYER_COUNT, WINNER_PLAYER_ID
+from .rules import (
+    CARDS_DRAWN_PER_DRAW_STEP,
+    DECK_SIZE,
+    FIRST_PLAYER_DRAWS_ON_TURN_1,
+    GAME_DESCRIPTION,
+    MAX_LANDS_PLAYED_PER_TURN,
+    PLAYER_COUNT,
+    STARTING_HAND_SIZE,
+    STARTING_LIFE,
+    BattlefieldState,
+    Card,
+    CardType,
+    GameState,
+    Phase,
+    PlayerState,
+    check_game_invariants,
+    validate_card,
+    validate_deck,
+)
 
-__all__ = ["GAME_DESCRIPTION", "MAX_TURNS", "PLAYER_COUNT", "WINNER_PLAYER_ID"]
+__all__ = [
+    "PLAYER_COUNT",
+    "STARTING_LIFE",
+    "DECK_SIZE",
+    "STARTING_HAND_SIZE",
+    "CARDS_DRAWN_PER_DRAW_STEP",
+    "MAX_LANDS_PLAYED_PER_TURN",
+    "FIRST_PLAYER_DRAWS_ON_TURN_1",
+    "CardType",
+    "Phase",
+    "Card",
+    "BattlefieldState",
+    "PlayerState",
+    "GameState",
+    "GAME_DESCRIPTION",
+    "validate_card",
+    "validate_deck",
+    "check_game_invariants",
+]

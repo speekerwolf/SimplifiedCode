@@ -1,5 +1,5 @@
 """Module two: game engine implementation."""
 
-from .engine import Card, GameEngine, GameResult, Player
+from .engine import Event, GameEngine, GameResult
 
-__all__ = ["Card", "Player", "GameResult", "GameEngine"]
+__all__ = ["Event", "GameResult", "GameEngine"]
