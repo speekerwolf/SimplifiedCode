@@ -1,0 +1,9 @@
+.cursor/rules/
+.cursorrules
+RULE.md
+AGENTS.md
+
+# OS/tooling noise
+Thumbs.db
+Desktop.ini
+.DS_Store
